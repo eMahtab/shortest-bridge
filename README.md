@@ -32,7 +32,7 @@ Output: 1
 3. grid[i][j] is either 0 or 1.
 4. There are exactly two islands in grid.
 
-# Implementation 1 : BFS from all the 1's of first island (DFS+BFS)
+# Implementation 1 : Using BFS try to reach any `1` of the other island (DFS+BFS)
 ```java
 class Solution {
     public int shortestBridge(int[][] grid) {
