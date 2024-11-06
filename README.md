@@ -38,36 +38,39 @@ class Solution {
     public int shortestBridge(int[][] grid) {
         int rows = grid.length;
         int cols = grid[0].length;
-        boolean islandFound = false;
         Queue<int[]> queue = new LinkedList<>();
-        for(int row = 0; row < rows; row++) {
+        boolean firstIslandFound = false;
+        for(int row = 0; row < rows && !firstIslandFound; row++) {
             for(int col = 0; col < cols; col++) {
-                if(grid[row][col] == 1 && !islandFound) {
-                    islandFound = true;
+                if(grid[row][col] == 1) {
+                    firstIslandFound = true;
                     dfs(grid, row, col, queue);
+                    break;
                 }
             }
         }
         int distance = 0;
-        int[][] directions = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+        int[][] directions = {{0, 1}, {0,-1}, {-1, 0}, {1, 0}};
         Set<String> visited = new HashSet<>();
         while(!queue.isEmpty()) {
             int size = queue.size();
             for(int i = 1; i <= size; i++) {
                 int[] pos = queue.remove();
-                String key = pos[0]+","+pos[1];
-                if(visited.contains(key)) continue;
-                visited.add(key);
-                for(int[] dir : directions) {
-                    int x = pos[0] + dir[0];
-                    int y = pos[1] + dir[1];
-                    if(x >= 0 && x < rows && y >= 0 && y < cols) {
-                        if(grid[x][y] == 1)
-                          return distance;
-                        if(grid[x][y] == 0 && !visited.contains(x+","+y)) {
-                            queue.add(new int[]{x, y});
-                        }
-                    }
+                String location = pos[0]+","+pos[1];
+                if(visited.contains(location)) continue;
+                visited.add(location);
+                for(int[] direction : directions) {
+                    int x = pos[0] + direction[0];
+                    int y = pos[1] + direction[1];
+                    if(x < 0 || x >= grid.length || y < 0 || y >= grid[0].length)
+                      continue;
+                    if(grid[x][y] == 1)
+                      return distance;  
+                    else if(grid[x][y] == 0) {
+                        String key = x+","+y;
+                        if(!visited.contains(key))
+                          queue.add(new int[]{x,y});
+                    }    
                 }
             }
             distance++;
@@ -78,8 +81,9 @@ class Solution {
     private void dfs(int[][] grid, int row, int col, Queue<int[]> queue) {
         if(row < 0 || row >= grid.length || col < 0 || col >= grid[0].length || grid[row][col] != 1)
           return;
-        queue.add(new int[]{row, col});
+
         grid[row][col] = 2;
+        queue.add(new int[]{row, col});
         dfs(grid, row, col + 1, queue);
         dfs(grid, row, col - 1, queue);
         dfs(grid, row - 1, col, queue);
